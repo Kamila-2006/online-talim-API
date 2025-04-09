@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Category:
+class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     icon = models.CharField(max_length=100)

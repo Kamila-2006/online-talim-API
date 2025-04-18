@@ -1,33 +1,37 @@
 from rest_framework import serializers
-from django.contrib.auth.password_validation import validate_password
-from .models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
-class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True, required=True)
+class RegisterSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    username = serializers.CharField()
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    is_teacher = serializers.BooleanField()
+    date_joined = serializers.DateTimeField(read_only=True)
 
-    class Meta:
-        model = User
-        fields = ('username', 'password', 'password2', 'email', 'first_name', 'last_name', 'is_teacher', 'bio', 'profile_picture', 'date_joined')
-        extra_kwargs = {
-            'first_name': {'required': True},
-            'last_name': {'required': True},
-            'email': {'required': True},
-            'date_joined': {'read_only': True}
-        }
+    def create(self, validation_data):
+        return User.objects.create_user(**validation_data)
 
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
-        return attrs
 
-    def create(self, validated_data):
-        password = validated_data.pop('password')
-        validated_data.pop('password2')
-        user = User.objects.create(**validated_data)
+class UserSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    username = serializers.CharField(read_only=True)
+    email = serializers.EmailField(read_only=True)
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    is_teacher = serializers.BooleanField(read_only=True)
+    bio = serializers.CharField()
+    profile_picture = serializers.ImageField(read_only=True)
+    date_joined = serializers.DateTimeField(read_only=True)
 
-        user.set_password(password)
-        user.save()
-
-        return user
+    def update(self, instance, validated_data):
+        instance.first_name = validated_data['first_name']
+        instance.last_name = validated_data['last_name']
+        instance.bio = validated_data['bio']
+        instance.save()
+        return instance

@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'categories',
     'users',
     'courses',
+    'reviews',
+    'enrollments',
 ]
 
 MIDDLEWARE = [

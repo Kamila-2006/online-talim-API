@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from .models import Category, Course, Module, Lesson
-from .serializers import CategorySerializer, CourseSerializer, ModulesSerializer
+from .serializers import CategorySerializer, CourseSerializer, ModulesSerializer, LessonSerializer
 from .pagination import CategoryPagination, CoursePagination, ModulePagination, LessonPagination
 
 
@@ -18,3 +18,8 @@ class ModuleViewSet(viewsets.ModelViewSet):
     queryset = Module.objects.all()
     serializer_class = ModulesSerializer
     pagination_class = ModulePagination
+
+class LessonViewSet(viewsets.ModelViewSet):
+    queryset = Lesson.objects.all()
+    serializer_class = LessonSerializer
+    pagination_class = LessonPagination

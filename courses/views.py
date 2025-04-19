@@ -40,3 +40,11 @@ class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     pagination_class = LessonPagination
+
+class LessonsByModule(generics.ListAPIView):
+    serializer_class = LessonSerializer
+    pagination_class = LessonPagination
+
+    def get_queryset(self):
+        module_id = self.kwargs['module_id']
+        return Lesson.objects.filter(module_id=module_id)

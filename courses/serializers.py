@@ -7,3 +7,9 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ['id', 'name', 'description', 'icon', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
+
+class CourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ['id', 'title', 'description', 'teacher', 'category', 'price', 'discount_price', 'image', 'is_published', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']

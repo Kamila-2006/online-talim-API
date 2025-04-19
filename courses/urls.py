@@ -12,4 +12,5 @@ router.register(r'lessons', views.LessonViewSet, basename='lessons')
 urlpatterns = [
     path('', include(router.urls)),
     path('courses/category/<int:category_id>/', views.CoursesByCategory.as_view(), name='courses-by-category'),
+    path('modules/course/<int:course_id>/', views.ModulesByCourse.as_view(), name='modules-by-course'),
 ]

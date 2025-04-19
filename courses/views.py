@@ -28,6 +28,14 @@ class ModuleViewSet(viewsets.ModelViewSet):
     serializer_class = ModulesSerializer
     pagination_class = ModulePagination
 
+class ModulesByCourse(generics.ListAPIView):
+    serializer_class = ModulesSerializer
+    pagination_class = ModulePagination
+
+    def get_queryset(self):
+        course_id = self.kwargs['course_id']
+        return Module.objects.filter(course_id=course_id)
+
 class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer

@@ -14,7 +14,6 @@ class Category(BaseModel):
     class Meta:
         verbose_name_plural = 'Categories'
 
-
 class Course(BaseModel):
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -22,12 +21,11 @@ class Course(BaseModel):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='courses')
     price = models.DecimalField(max_digits=8, decimal_places=2)
     discount_price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
-    image = models.ImageField(upload_to='course_images/')
+    image = models.ImageField(upload_to='course_images/', null=True, blank=True)
     is_published = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
-
 
 class Module(BaseModel):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='modules')
@@ -37,7 +35,6 @@ class Module(BaseModel):
 
     def __str__(self):
         return f"{self.course.title} - {self.title}"
-
 
 class Lesson(BaseModel):
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='lessons')

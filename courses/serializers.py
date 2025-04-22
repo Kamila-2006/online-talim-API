@@ -34,6 +34,21 @@ class ModulesSerializer(serializers.ModelSerializer):
         fields = ['id', 'course', 'title', 'description', 'order', 'lessons', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
+    def create(self, validated_data):
+        lessons_data = validated_data.pop('lessons', [])
+
+        module = Module.objects.create(**validated_data)
+
+        for lesson_data in lessons_data:
+            Lesson.objects.create(module=module, **lesson_data)
+
+        return module
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['course'] = CourseShortSerializer(instance.course).data
+        return rep
+
 class ModulesShortSerializer(serializers.ModelSerializer):
     lessons = LessonShortSerializer(many=True, write_only=True)
     class Meta:
@@ -70,3 +85,9 @@ class CourseSerializer(serializers.ModelSerializer):
         rep['teacher'] = TeacherSerializer(instance.teacher).data
         rep['category'] = CategoryShortSerializer(instance.category).data
         return rep
+
+class CourseShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ['id', 'title']
+        read_only_fields = ['id',]

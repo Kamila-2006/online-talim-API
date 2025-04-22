@@ -35,3 +35,15 @@ class UserSerializer(serializers.Serializer):
         instance.bio = validated_data['bio']
         instance.save()
         return instance
+
+class TeacherSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    username = serializers.CharField(read_only=True)
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+
+    def update(self, instance, validated_data):
+        instance.first_name = validated_data['first_name']
+        instance.last_name = validated_data['last_name']
+        instance.save()
+        return instance

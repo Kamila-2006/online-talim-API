@@ -16,11 +16,23 @@ class CategoryShortSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
         read_only_fields = ['id',]
 
+class LessonModuleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Module
+        fields = ['id', 'title']
+        read_only_fields = ['id', 'title']
+
 class LessonSerializer(serializers.ModelSerializer):
+    module = LessonModuleSerializer(read_only=True)
     class Meta:
         model = Lesson
         fields = ['id', 'module', 'title', 'content', 'video_url', 'duration', 'order', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['module'] = LessonModuleSerializer(instance.module).data
+        return rep
 
 class LessonShortSerializer(serializers.ModelSerializer):
     class Meta:

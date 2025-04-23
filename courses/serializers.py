@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Category, Course, Module, Lesson
 from users.models import User
-from users.serializers import TeacherSerializer
+from users.serializers import UserShortSerializer
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -94,7 +94,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
-        rep['teacher'] = TeacherSerializer(instance.teacher).data
+        rep['teacher'] = UserShortSerializer(instance.teacher).data
         rep['category'] = CategoryShortSerializer(instance.category).data
         return rep
 

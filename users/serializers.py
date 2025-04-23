@@ -36,7 +36,7 @@ class UserSerializer(serializers.Serializer):
         instance.save()
         return instance
 
-class TeacherSerializer(serializers.Serializer):
+class UserShortSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     username = serializers.CharField(read_only=True)
     first_name = serializers.CharField()

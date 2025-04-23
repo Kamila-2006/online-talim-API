@@ -1,12 +1,12 @@
 from django.db import models
-from core.base_models import BaseModel
 from users.models import User
 from courses.models import Course, Lesson
 
 
-class Enrollment(BaseModel):
+class Enrollment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='enrollments')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
+    enrolled_at = models.DateTimeField(auto_now_add=True)
     is_completed = models.BooleanField(default=False)
     completed_at = models.DateTimeField(null=True, blank=True)
 

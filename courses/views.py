@@ -50,7 +50,7 @@ class ModuleViewSet(viewsets.ModelViewSet):
 class ModulesByCourse(generics.ListAPIView):
     serializer_class = ModulesSerializer
     pagination_class = ModulePagination
-    permission_classes = [IsAuthenticated()]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         course_id = self.kwargs['course_id']

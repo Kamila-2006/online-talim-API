@@ -64,13 +64,13 @@ class LessonViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.request.method == 'GET':
             if self.action == 'list':
-                return [IsAuthenticated]
-            return [IsEnrolledOrTeacherOrAdmin]
+                return [IsAuthenticated()]
+            return [IsEnrolledOrTeacherOrAdmin()]
         elif self.request.method == 'POST':
-            return [IsCourseTeacherOrAdmin]
+            return [IsCourseTeacherOrAdmin()]
         elif self.request.method in ['PUT', 'PATCH', 'DELETE']:
-            return [IsCourseTeacherOrAdmin]
-        return [IsAuthenticated]
+            return [IsCourseTeacherOrAdmin()]
+        return [IsAuthenticated()]
 
 class LessonsByModule(generics.ListAPIView):
     serializer_class = LessonSerializer

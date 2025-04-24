@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from enrollments.models import Enrollment
 
 
 class IsOwnerOrAdminOrReadOnly(permissions.BasePermission):
@@ -14,3 +15,16 @@ class IsTeacher(permissions.BasePermission):
 class IsCourseTeacherOrAdmin(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user.is_staff or (obj.teacher == request.user)
+
+class IsEnrolledOrTeacherOrAdmin(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if not request.user or not request.user.is_authenticated:
+            return False
+
+        if request.user.is_staff:
+            return True
+
+        if obj.module.course.teacher == request.user:
+            return True
+
+        return Enrollment.objects.filter(user=request.user, course=obj.module.course).exists()

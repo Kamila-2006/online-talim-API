@@ -4,7 +4,7 @@ from .models import Category, Course, Module, Lesson
 from .serializers import CategorySerializer, CourseSerializer, ModulesSerializer, LessonSerializer
 from .pagination import CategoryPagination, CoursePagination, ModulePagination, LessonPagination
 from rest_framework import generics
-from users.permissions import IsTeacher, IsCourseTeacherOrAdmin
+from users.permissions import IsTeacher, IsCourseTeacherOrAdmin, IsEnrolledOrTeacherOrAdmin
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -61,9 +61,21 @@ class LessonViewSet(viewsets.ModelViewSet):
     serializer_class = LessonSerializer
     pagination_class = LessonPagination
 
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            if self.action == 'list':
+                return [IsAuthenticated]
+            return [IsEnrolledOrTeacherOrAdmin]
+        elif self.request.method == 'POST':
+            return [IsCourseTeacherOrAdmin]
+        elif self.request.method in ['PUT', 'PATCH', 'DELETE']:
+            return [IsCourseTeacherOrAdmin]
+        return [IsAuthenticated]
+
 class LessonsByModule(generics.ListAPIView):
     serializer_class = LessonSerializer
     pagination_class = LessonPagination
+    permission_classes = [IsEnrolledOrTeacherOrAdmin]
 
     def get_queryset(self):
         module_id = self.kwargs['module_id']

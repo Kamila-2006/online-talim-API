@@ -1,9 +1,9 @@
 from rest_framework import viewsets
+from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from .models import Category, Course, Module, Lesson
 from .serializers import CategorySerializer, CourseSerializer, ModulesSerializer, LessonSerializer
 from .pagination import CategoryPagination, CoursePagination, ModulePagination, LessonPagination
-from rest_framework import generics
 from users.permissions import IsTeacher, IsCourseTeacherOrAdmin, IsEnrolledOrTeacherOrAdmin
 
 

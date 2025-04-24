@@ -32,3 +32,11 @@ class ProgressViewSet(viewsets.ModelViewSet):
     queryset = Progress.objects.all()
     serializer_class = ProgressSerializer
     pagination_class = ProgressPagination
+
+class ProgressByEnrollment(generics.ListAPIView):
+    serializer_class = ProgressSerializer
+    pagination_class = ProgressPagination
+
+    def get_queryset(self):
+        enrollment_id = self.kwargs['enrollment_id']
+        return Progress.objects.filter(enrollment_id=enrollment_id)

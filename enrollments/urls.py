@@ -9,6 +9,7 @@ router.register(r'progress', views.ProgressViewSet, basename='progress')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('enrollments/users/<int:user_id>/', views.EnrollmentsByUsers.as_view()),
-    path('enrollments/courses/<int:course_id>/', views.EnrollmentsByCourses.as_view()),
+    path('enrollments/user/<int:user_id>/', views.EnrollmentsByUsers.as_view()),
+    path('enrollments/course/<int:course_id>/', views.EnrollmentsByCourses.as_view()),
+    path('progress/enrollment/<int:enrollment_id>/', views.ProgressByEnrollment.as_view()),
 ]

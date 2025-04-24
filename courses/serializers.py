@@ -103,3 +103,9 @@ class CourseShortSerializer(serializers.ModelSerializer):
         model = Course
         fields = ['id', 'title']
         read_only_fields = ['id',]
+
+class ProgressLessonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lesson
+        fields = ['id', 'title']
+        read_only_fields = ['id', 'title']

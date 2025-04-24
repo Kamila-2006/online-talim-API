@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import Enrollment
+from .models import Enrollment, Progress
 from courses.models import Course
 from users.serializers import UserShortSerializer
-from courses.serializers import CourseShortSerializer
+from courses.serializers import CourseShortSerializer, ProgressLessonSerializer
 
 
 class EnrollmentSerializer(serializers.ModelSerializer):
@@ -23,7 +23,18 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         rep['course'] = CourseShortSerializer(instance.course).data
         return rep
 
-class ProgressSerializer(serializers.ModelSerializer):
+class EnrollmentShortSerializer(serializers.ModelSerializer):
+    course = CourseShortSerializer(read_only=True)
     class Meta:
+        model = Enrollment
+        fields = ['id', 'course']
+        read_only_fields = ['id', 'course']
+
+class ProgressSerializer(serializers.ModelSerializer):
+    enrollment = EnrollmentShortSerializer(read_only=True)
+    lesson = ProgressLessonSerializer(read_only=True)
+
+    class Meta:
+        model = Progress
         fields = ['id', 'enrollment', 'lesson', 'is_completed', 'completed_at']
         read_only_fields = ['id',]

@@ -22,3 +22,8 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         rep['user'] = UserShortSerializer(instance.user).data
         rep['course'] = CourseShortSerializer(instance.course).data
         return rep
+
+class ProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ['id', 'enrollment', 'lesson', 'is_completed', 'completed_at']
+        read_only_fields = ['id',]

@@ -1,9 +1,9 @@
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from .models import Enrollment
-from .seralizers import EnrollmentSerializer
-from .pagination import EnrollmentPagination
+from .models import Enrollment, Progress
+from .seralizers import EnrollmentSerializer, ProgressSerializer
+from .pagination import EnrollmentPagination, ProgressPagination
 
 
 class EnrollmentViewSet(viewsets.ModelViewSet):
@@ -27,3 +27,8 @@ class EnrollmentsByCourses(generics.ListAPIView):
     def get_queryset(self):
         course_id = self.kwargs['course_id']
         return Enrollment.objects.filter(course_id=course_id)
+
+class ProgressViewSet(viewsets.ModelViewSet):
+    queryset = Progress.objects.all()
+    serializer_class = ProgressSerializer
+    pagination_class = ProgressPagination

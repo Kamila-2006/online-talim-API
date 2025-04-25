@@ -57,3 +57,26 @@ class IsOwnerOrAdmin(permissions.BasePermission):
                 str(request.user.id) == str(user_id)
             )
         )
+
+class IsEnrollmentOwner(permissions.BasePermission):
+    def has_permission(self, request, view):
+        enrollment_id = request.data.get('enrollment') or request.query_params.get('enrollment')
+        if not enrollment_id:
+            return False
+        return Enrollment.objects.filter(id=enrollment_id, user=request.user).exists()
+
+class IsProgressOwner(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.enrollment.user == request.user
+
+class IsProgressOwnerOrTeacherOrAdmin(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        return (
+            user.is_authenticated and (
+                obj.enrollment.user == user or
+                obj.enrollment.course.teacher == user or
+                user.is_staff
+            )
+        )
+

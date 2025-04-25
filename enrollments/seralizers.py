@@ -38,3 +38,25 @@ class ProgressSerializer(serializers.ModelSerializer):
         model = Progress
         fields = ['id', 'enrollment', 'lesson', 'is_completed', 'completed_at']
         read_only_fields = ['id',]
+
+class EnrollmentDetailSerializer(EnrollmentSerializer):
+    progress = serializers.SerializerMethodField()
+
+    class Meta(EnrollmentSerializer.Meta):
+        fields = EnrollmentSerializer.Meta.fields + ['progress']
+
+    def get_progress(self, obj):
+        from courses.models import Lesson
+
+        total_lessons = Lesson.objects.filter(module__course=obj.course).count()
+        completed_lessons = Progress.objects.filter(
+            enrollment=obj, is_completed=True
+        ).count()
+
+        percentage = int((completed_lessons / total_lessons) * 100) if total_lessons else 0
+
+        return {
+            "completed_lessons": completed_lessons,
+            "total_lessons": total_lessons,
+            "percentage": percentage
+        }

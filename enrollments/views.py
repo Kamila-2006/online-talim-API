@@ -2,15 +2,20 @@ from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import Enrollment, Progress
-from .seralizers import EnrollmentSerializer, ProgressSerializer
+from courses.models import Lesson
+from .seralizers import EnrollmentSerializer, ProgressSerializer, EnrollmentDetailSerializer
 from .pagination import EnrollmentPagination, ProgressPagination
 
 
 class EnrollmentViewSet(viewsets.ModelViewSet):
     queryset = Enrollment.objects.all()
-    serializer_class = EnrollmentSerializer
     pagination_class = EnrollmentPagination
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return EnrollmentDetailSerializer
+        return EnrollmentSerializer
 
 class EnrollmentsByUsers(generics.ListAPIView):
     serializer_class = EnrollmentSerializer
@@ -40,3 +45,21 @@ class ProgressByEnrollment(generics.ListAPIView):
     def get_queryset(self):
         enrollment_id = self.kwargs['enrollment_id']
         return Progress.objects.filter(enrollment_id=enrollment_id)
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+
+        enrollment_id = self.kwargs['enrollment_id']
+        enrollment = Enrollment.objects.get(id=enrollment_id)
+        course = enrollment.course
+
+        total_lessons = Lesson.objects.filter(module__course=course).count()
+        completed_lessons = Progress.objects.filter(enrollment=enrollment, is_completed=True).count()
+        percentage = int((completed_lessons / total_lessons) * 100) if total_lessons else 0
+
+        response.data["progress_summary"] = {
+            "completed_lessons": completed_lessons,
+            "total_lessons": total_lessons,
+            "percentage": percentage
+        }
+        return response

@@ -23,7 +23,8 @@ class LessonModuleSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'title']
 
 class LessonSerializer(serializers.ModelSerializer):
-    module = LessonModuleSerializer(read_only=True)
+    module = serializers.PrimaryKeyRelatedField(queryset=Module.objects.all())
+
     class Meta:
         model = Lesson
         fields = ['id', 'module', 'title', 'content', 'video_url', 'duration', 'order', 'created_at', 'updated_at']
@@ -33,6 +34,12 @@ class LessonSerializer(serializers.ModelSerializer):
         rep = super().to_representation(instance)
         rep['module'] = LessonModuleSerializer(instance.module).data
         return rep
+
+class LessonUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lesson
+        fields = ['id', 'title', 'content', 'video_url', 'duration', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
 class LessonShortSerializer(serializers.ModelSerializer):
     class Meta:
@@ -60,6 +67,12 @@ class ModulesSerializer(serializers.ModelSerializer):
         rep = super().to_representation(instance)
         rep['course'] = CourseShortSerializer(instance.course).data
         return rep
+
+class ModuleUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Module
+        fields = ['id', 'title', 'description', 'order', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
 class ModulesShortSerializer(serializers.ModelSerializer):
     lessons = LessonShortSerializer(many=True, write_only=True)
@@ -97,6 +110,12 @@ class CourseSerializer(serializers.ModelSerializer):
         rep['teacher'] = UserShortSerializer(instance.teacher).data
         rep['category'] = CategoryShortSerializer(instance.category).data
         return rep
+
+class CourseUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ['id', 'title', 'description', 'price', 'discount_price','image', 'is_published', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
 class CourseShortSerializer(serializers.ModelSerializer):
     class Meta:

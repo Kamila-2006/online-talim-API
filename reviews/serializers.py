@@ -22,3 +22,9 @@ class ReviewSerializer(serializers.ModelSerializer):
         rep = super().to_representation(instance)
         rep['course'] = CourseShortSerializer(instance.course).data
         return rep
+
+class ReviewUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['id', 'rating', 'comment', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']

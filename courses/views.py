@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from .models import Category, Course, Module, Lesson
-from .serializers import CategorySerializer, CourseSerializer, ModulesSerializer, LessonSerializer
+from .serializers import CategorySerializer, CourseSerializer, CourseUpdateSerializer, ModulesSerializer, LessonSerializer, ModuleUpdateSerializer, LessonUpdateSerializer
 from .pagination import CategoryPagination, CoursePagination, ModulePagination, LessonPagination
 from users.permissions import IsTeacher, IsCourseTeacherOrAdmin, IsEnrolledOrTeacherOrAdmin
 
@@ -29,6 +29,13 @@ class CourseViewSet(viewsets.ModelViewSet):
             return [IsCourseTeacherOrAdmin()]
         return [AllowAny()]
 
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return CourseSerializer
+        elif self.action in ['update', 'partial_update']:
+            return CourseUpdateSerializer
+        return CourseSerializer
+
 class CoursesByCategory(generics.ListAPIView):
     serializer_class = CourseSerializer
     pagination_class = CoursePagination
@@ -46,6 +53,13 @@ class ModuleViewSet(viewsets.ModelViewSet):
         if self.request.method == 'GET':
             return [IsAuthenticated()]
         return [IsCourseTeacherOrAdmin()]
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return ModulesSerializer
+        elif self.action in ['update', 'partial_update']:
+            return ModuleUpdateSerializer
+        return ModulesSerializer
 
 class ModulesByCourse(generics.ListAPIView):
     serializer_class = ModulesSerializer
@@ -71,6 +85,13 @@ class LessonViewSet(viewsets.ModelViewSet):
         elif self.request.method in ['PUT', 'PATCH', 'DELETE']:
             return [IsCourseTeacherOrAdmin()]
         return [IsAuthenticated()]
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return LessonSerializer
+        elif self.action in ['update', 'partial_update']:
+            return LessonUpdateSerializer
+        return LessonSerializer
 
 class LessonsByModule(generics.ListAPIView):
     serializer_class = LessonSerializer

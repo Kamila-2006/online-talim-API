@@ -60,3 +60,9 @@ class EnrollmentDetailSerializer(EnrollmentSerializer):
             "total_lessons": total_lessons,
             "percentage": percentage
         }
+
+class EnrollmentUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enrollment
+        fields = ['id', 'user', 'is_completed', 'completed_at']
+        read_only_fields = ['id', 'user',]

@@ -3,7 +3,7 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from users.permissions import IsReviewOwner, IsReviewOwnerOrAdmin, IsEnrolledAndCompleted, IsOwnerOrAdmin
 from .models import Review
-from .serializers import ReviewSerializer
+from .serializers import ReviewSerializer, ReviewUpdateSerializer
 from .pagination import ReviewPagination
 
 
@@ -22,6 +22,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
         elif self.request.method == 'DELETE':
             return [IsReviewOwnerOrAdmin()]
         return [IsAuthenticated()]
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return ReviewSerializer
+        elif self.action in ['update', 'partial_update']:
+            return ReviewUpdateSerializer
+        return ReviewSerializer
 
 class ReviewsByCourse(generics.ListAPIView):
     serializer_class = ReviewSerializer

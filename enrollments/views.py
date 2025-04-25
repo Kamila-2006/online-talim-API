@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from users.permissions import IsOwnerOrAdmin, IsEnrollmentOwnerOrAdmin, IsEnrollmentOwnerOrTeacherOrAdmin, IsCourseTeacherOrAdmin, IsEnrollmentOwner, IsProgressOwner, IsProgressOwnerOrTeacherOrAdmin
 from .models import Enrollment, Progress
 from courses.models import Lesson
-from .seralizers import EnrollmentSerializer, ProgressSerializer, EnrollmentDetailSerializer
+from .seralizers import EnrollmentSerializer, ProgressSerializer, EnrollmentDetailSerializer, EnrollmentUpdateSerializer
 from .pagination import EnrollmentPagination, ProgressPagination
 
 
@@ -28,6 +28,8 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return EnrollmentDetailSerializer
+        elif self.action in ['update', 'partial_update']:
+            return EnrollmentUpdateSerializer
         return EnrollmentSerializer
 
 class EnrollmentsByUsers(generics.ListAPIView):

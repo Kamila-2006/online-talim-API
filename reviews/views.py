@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework import generics
 from .models import Review
-from serializers import ReviewSerializer
+from .serializers import ReviewSerializer
 from .pagination import ReviewPagination
 
 

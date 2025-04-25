@@ -80,3 +80,24 @@ class IsProgressOwnerOrTeacherOrAdmin(permissions.BasePermission):
             )
         )
 
+class IsEnrolledAndCompleted(permissions.BasePermission):
+    def has_permission(self, request, view):
+        course_id = request.data.get('course')
+        user = request.user
+
+        if not user.is_authenticated or not course_id:
+            return False
+
+        return Enrollment.objects.filter(
+            user=user,
+            course_id=course_id,
+            is_completed=True
+        ).exists()
+
+class IsReviewOwner(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user
+
+class IsReviewOwnerOrAdmin(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return request.user.is_staff or obj.user == request.user

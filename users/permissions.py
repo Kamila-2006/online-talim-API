@@ -28,3 +28,32 @@ class IsEnrolledOrTeacherOrAdmin(permissions.BasePermission):
             return True
 
         return Enrollment.objects.filter(user=request.user, course=obj.module.course).exists()
+
+class IsEnrollmentOwnerOrTeacherOrAdmin(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return (
+            request.user.is_authenticated and (
+                request.user.is_staff or
+                obj.user == request.user or
+                obj.course.teacher == request.user
+            )
+        )
+
+class IsEnrollmentOwnerOrAdmin(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return (
+            request.user.is_authenticated and (
+                request.user.is_staff or
+                obj.user == request.user
+            )
+        )
+
+class IsOwnerOrAdmin(permissions.BasePermission):
+    def has_permission(self, request, view):
+        user_id = view.kwargs.get('user_id')
+        return (
+            request.user.is_authenticated and (
+                request.user.is_staff or
+                str(request.user.id) == str(user_id)
+            )
+        )

@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from users.permissions import IsOwnerOrAdmin, IsEnrollmentOwnerOrAdmin, IsEnrollmentOwnerOrTeacherOrAdmin, IsCourseTeacherOrAdmin
 from .models import Enrollment, Progress
 from courses.models import Lesson
 from .seralizers import EnrollmentSerializer, ProgressSerializer, EnrollmentDetailSerializer
@@ -10,7 +11,19 @@ from .pagination import EnrollmentPagination, ProgressPagination
 class EnrollmentViewSet(viewsets.ModelViewSet):
     queryset = Enrollment.objects.all()
     pagination_class = EnrollmentPagination
-    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            if self.action == 'list':
+                return [IsAdminUser()]
+            return [IsEnrollmentOwnerOrTeacherOrAdmin()]
+        elif self.request.method == 'POST':
+            return [IsAuthenticated()]
+        elif self.request.method in ['PUT', 'PATCH']:
+            return [IsEnrollmentOwnerOrTeacherOrAdmin()]
+        elif self.request.method == 'DELETE':
+            return [IsEnrollmentOwnerOrAdmin()]
+        return [IsAuthenticated()]
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -20,6 +33,7 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
 class EnrollmentsByUsers(generics.ListAPIView):
     serializer_class = EnrollmentSerializer
     pagination_class = EnrollmentPagination
+    permission_classes = [IsOwnerOrAdmin]
 
     def get_queryset(self):
         user_id = self.kwargs['user_id']
@@ -28,6 +42,7 @@ class EnrollmentsByUsers(generics.ListAPIView):
 class EnrollmentsByCourses(generics.ListAPIView):
     serializer_class = EnrollmentSerializer
     pagination_class = EnrollmentPagination
+    permission_classes = [IsCourseTeacherOrAdmin]
 
     def get_queryset(self):
         course_id = self.kwargs['course_id']

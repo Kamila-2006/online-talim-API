@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Enrollment, Progress
-from courses.models import Course
+from courses.models import Course, Lesson
 from users.serializers import UserShortSerializer
 from courses.serializers import CourseShortSerializer, ProgressLessonSerializer
 
@@ -31,13 +31,19 @@ class EnrollmentShortSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'course']
 
 class ProgressSerializer(serializers.ModelSerializer):
-    enrollment = EnrollmentShortSerializer(read_only=True)
-    lesson = ProgressLessonSerializer(read_only=True)
+    enrollment = serializers.PrimaryKeyRelatedField(queryset=Enrollment.objects.all())
+    lesson = serializers.PrimaryKeyRelatedField(queryset=Lesson.objects.all())
 
     class Meta:
         model = Progress
         fields = ['id', 'enrollment', 'lesson', 'is_completed', 'completed_at']
         read_only_fields = ['id',]
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['enrollment'] = EnrollmentShortSerializer(instance.enrollment).data
+        rep['lesson'] = ProgressLessonSerializer(instance.lesson).data
+        return rep
 
 class EnrollmentDetailSerializer(EnrollmentSerializer):
     progress = serializers.SerializerMethodField()
